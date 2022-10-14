@@ -31,8 +31,18 @@ import com.marginallyclever.robotoverlord.RobotOverlord;
  * See org.slf4j.Logger
  */
 public class Log {
-	public static String LOG_FILE_PATH;
-	public static String LOG_FILE_NAME_TXT = "log.txt";
+
+    private static final boolean LOG_USE_HOME_DIR = Boolean.getBoolean("log.useHomeDir");
+	public static String LOG_FILE_PATH = System.getProperty("log.dir", LOG_USE_HOME_DIR ? System.getProperty("user.home") + "/robot-overlord/" : null);
+
+	static {
+		// make sure log path exists
+		if (LOG_FILE_PATH != null) {
+			new File(LOG_FILE_PATH).mkdirs();
+		}
+	}
+
+	public static String LOG_FILE_NAME_TXT = System.getProperty("log.fileName", "log.txt");
 	public static final String PROGRAM_START_STRING = "PROGRAM START";
 	public static final String PROGRAM_END_STRING = "PROGRAM END";
 	
@@ -48,10 +58,13 @@ public class Log {
 		listeners.remove(listener);
 	}
 
-	public static String getLogLocation() {
-		return LOG_FILE_PATH+LOG_FILE_NAME_TXT;
-	}
-	
+    public static String getLogLocation() {
+        if (LOG_FILE_PATH == null || LOG_FILE_PATH.isEmpty()) {
+            return LOG_FILE_NAME_TXT;
+        }
+        return LOG_FILE_PATH + File.separator + LOG_FILE_NAME_TXT;
+    }
+
 	public static void start() {
 		if(logger!=null) {
 			// already started
@@ -105,7 +118,7 @@ public class Log {
 	 * wipe the log file
 	 */
 	public static void deleteOldLog() {
-		Path p = FileSystems.getDefault().getPath("log.txt");
+		Path p = FileSystems.getDefault().getPath(getLogLocation());
 		try {
 			Files.deleteIfExists(p);
 		} catch (IOException e1) {
@@ -178,7 +191,7 @@ public class Log {
 		// TODO why have logger if it's not being used?
 		//logger.info(msg);
 		
-		try (Writer fileWriter = new OutputStreamWriter(new FileOutputStream("log.txt", true), StandardCharsets.UTF_8)) {
+		try (Writer fileWriter = new OutputStreamWriter(new FileOutputStream(getLogLocation(), true), StandardCharsets.UTF_8)) {
 			PrintWriter logToFile = new PrintWriter(fileWriter);
 			logToFile.write(cleanMsg+"\n");
 			logToFile.flush();
