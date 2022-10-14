@@ -14,24 +14,6 @@
     <format>jar</format>
   </formats>
 
-  <!--
-  JInput binaries from the main directory. We can just add
-  everything as Conveyor automatically extracts them into the bin
-  directory and signs them. Libraries that don't fit the target OS
-  get removed. -->
-  <fileSets>
-    <fileSet>
-      <directory>${project.basedir}</directory>
-      <outputDirectory>/</outputDirectory>
-      <lineEnding>keep</lineEnding>
-      <includes>
-        <include>jinput-*.dll</include>
-        <include>libjinput-*.so</include>
-        <!--<include>libjinput-*.jnilib</include>--> <!-- TODO: the -osx file contains some bad architecture information -->
-      </includes>
-    </fileSet>
-  </fileSets>
-
   <dependencySets>
     <!-- Unpack everything that isn't a JOGL or GlueGen or jinput library -->
     <dependencySet>
