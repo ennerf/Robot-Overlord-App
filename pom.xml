@@ -129,7 +129,47 @@ If you like this project, please support us by buying Marginally Clever products
 						</goals>
 					</execution>
 				</executions>
-			</plugin><!-- 
+			</plugin>
+
+			<!-- Fix the module-info.java to fit the uber jar -->
+			<plugin>
+				<groupId>org.moditect</groupId>
+				<artifactId>moditect-maven-plugin</artifactId>
+				<version>1.0.0.RC2</version>
+				<executions>
+					<execution>
+						<id>add-module-infos</id>
+						<phase>package</phase>
+						<goals>
+							<goal>add-module-info</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}</outputDirectory>
+							<overwriteExistingFiles>true</overwriteExistingFiles>
+							<modules>
+								<module>
+									<file>${project.build.directory}/${project.build.finalName}-with-dependencies.jar</file>
+									<moduleInfoSource>
+										module com.marginallyclever.robotOverlord {
+										requires java.base; <!-- adding base creates an invalid file that jlink ignores. TODO: add the required opens arguments to actually make it work  -->
+										requires java.desktop;
+										requires java.management;
+										requires java.naming;
+										requires java.prefs;
+										requires java.security.jgss;
+										requires java.sql;
+										requires jdk.unsupported;
+										requires jdk.zipfs;
+										}
+									</moduleInfoSource>
+								</module>
+							</modules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!--
 			<plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>2.10.3</version>
@@ -196,24 +236,6 @@ If you like this project, please support us by buying Marginally Clever products
 				<configuration>
 					<ignoreNonCompile>${maven-dependency-plugin.ignoreNonCompile}</ignoreNonCompile>
 				</configuration>
-			</plugin>
-			<plugin> <!-- Copy dependencies for Conveyor -->
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<version>3.3.0</version>
-				<executions>
-					<execution>
-						<id>copy-dependencies</id>
-						<phase>package</phase>
-						<goals>
-							<goal>copy-dependencies</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.build.directory}/lib</outputDirectory>
-							<includeScope>runtime</includeScope>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

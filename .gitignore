@@ -45,3 +45,4 @@ packaging/*
 **/*.tmp
 **/temp.ngc
 log.txt
+output/
