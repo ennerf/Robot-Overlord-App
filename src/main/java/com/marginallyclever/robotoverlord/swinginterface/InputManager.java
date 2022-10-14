@@ -142,7 +142,7 @@ public class InputManager {
 		
 		String libPath = System.getProperty("net.java.games.input.librarypath");
 		Log.message("INPUT library path="+libPath);
-		if(libPath==null) {
+		if(libPath==null && System.getProperty("app.dir") == null /* means it was not packacked by Conveyor */) {
 			Log.message("Trying to force local path, likely to fail.");
 			System.setProperty("net.java.games.input.librarypath", System.getProperty("user.dir"));
 		}
